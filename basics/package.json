@@ -1,0 +1,20 @@
+{
+  "name": "basics",
+  "version": "1.0.0",
+  "description": "TS course for basics",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "lite-server"
+  },
+  "author": "Adam Lasak",
+  "license": "ISC",
+  "keywords": [
+    "typescript",
+    "udemy",
+    "course"
+  ],
+  "devDependencies": {
+    "lite-server": "^2.6.1"
+  }
+}
