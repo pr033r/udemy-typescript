@@ -1,1 +1,2 @@
-console.log('neco...');
+"use strict";
+console.log('hello world');
