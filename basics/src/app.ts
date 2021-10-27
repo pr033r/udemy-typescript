@@ -1,9 +1,56 @@
-const button = document.querySelector("button")!;
-const message = "Hello World!";
+const add = (...args: number[]) => {
+  return args.reduce((previous, current) => previous + current, 0);
+};
 
-function onClick(this: any) {
-  const me = this;
-  console.log(`some message: ${me.message}`);
+const result = add(1, 5, 6, 2, 5.3);
+console.log(result);
+
+const hobbies = ["Programming", "Hiking", "Swimming"];
+const user = {
+  name: "Adam",
+  age: 25,
+  skills: [{ programming: 10 }],
+};
+const [hobby1, hobby2, ...remainingHobbies] = hobbies; // destructuring an array -> does not change original array
+const { name: userName, ...restParams } = user; // destructuring an object -> name prop of object stores in userName const variable
+
+console.log(userName, restParams);
+
+const addShort: (a: number, b: number) => number = (a, b) => a + b;
+
+//-------------------------------------------------------------------------------------
+// for checking the generated US file
+class User {
+  private counterForLogout = 360;
+  public static readonly VERSION = "1.1";
+
+  public get counter(): number {
+    if (this.counterForLogout <= 0){
+      throw new Error('Your session expired');
+    }
+    return this.counterForLogout;
+  }
+
+  public set counter(v: number) {
+    this.counterForLogout = v;
+  }
+
+  constructor(public login: string, public password: string) {}
+
+  whosLogged() {
+    console.log(`> ${this.login} logged`);
+  }
+
+  // using this: User, prevents from unexptected behaviour as shown bellow
+  decreaseCounterOfLogout(this: User, by: number) {
+    this.counterForLogout -= by;
+  }
 }
 
-button.addEventListener("click", onClick.bind(this));
+const loginUser = new User("lasakada@tietoevry.com", "12345");
+const coppyUser = {
+  decreaseCounterOfLogout: loginUser.decreaseCounterOfLogout,
+};
+
+// UNXPECTED BEHAVIOUR - prevented with using this: User in User class method
+// coppyUser.decreaseCounterOfLogout(1); // ERROR: coppyUser Object has no same blueprint as User class
