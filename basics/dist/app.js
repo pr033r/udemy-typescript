@@ -13,4 +13,12 @@ console.log(printLength('Hello World!'));
 function getPropertyValue(obj, key) {
     return obj[key];
 }
+function startCourse(retrievedCourse) {
+    var resultCourse = {};
+    resultCourse.name = retrievedCourse.name;
+    resultCourse.sections = retrievedCourse.sections;
+    resultCourse.startDate = retrievedCourse.startDate;
+    resultCourse.pointsNeeded = retrievedCourse.pointsNeeded;
+    return resultCourse;
+}
 //# sourceMappingURL=app.js.map

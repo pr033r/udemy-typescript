@@ -21,3 +21,28 @@ console.log(printLength('Hello World!'));
 function getPropertyValue<T extends object, U extends keyof T>(obj: T, key: U) {
   return obj[key];
 }
+
+// Using PARTIAL
+// For cases that we fill in an object partialy -> during some if statements decisions etc.
+// and we don't know the future values for object yet
+interface Course {
+  name: string;
+  sections: string[];
+  startDate: Date;
+  pointsNeeded: number;
+}
+
+function startCourse(retrievedCourse: Course): Course {
+  const resultCourse: Partial<Course> = {};
+  // ...some code
+  resultCourse.name = retrievedCourse.name;
+  // ...some code
+  resultCourse.sections = retrievedCourse.sections;
+  // ...some code
+  resultCourse.startDate = retrievedCourse.startDate;
+  // ...some code
+  resultCourse.pointsNeeded = retrievedCourse.pointsNeeded;
+  // we don't want to return Partial<Course>
+  // with using 'as' we as programmers know, that object is fully filled-in
+  return resultCourse as Course;
+}
