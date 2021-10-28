@@ -1,75 +1,35 @@
-const add = (...args: number[]) => {
-  return args.reduce((previous, current) => previous + current, 0);
-};
+interface Admin {
+  id: number;
+  login: string;
+} // same as: type Admin = {...}
 
-const result = add(1, 5, 6, 2, 5.3);
-console.log(result);
+interface RegularEmployee {
+  privileges: string[];
+  startDate: Date;
+} // same as: type RegularEmployee = {...}
 
-const hobbies = ["Programming", "Hiking", "Swimming"];
-const user = {
-  name: "Adam",
-  age: 25,
-  skills: [{ programming: 10 }],
-};
-const [hobby1, hobby2, ...remainingHobbies] = hobbies; // destructuring an array -> does not change original array
-const { name: userName, ...restParams } = user; // destructuring an object -> name prop of object stores in userName const variable
+type ElevatedEmployee = RegularEmployee & Admin;
+// interface ElevatedEmployee extends Admin, RegularEmployee {}
+type UnknownEmployee = RegularEmployee | Admin;
 
-console.log(userName, restParams);
-
-const addShort: (a: number, b: number) => number = (a, b) => a + b;
-
-//-------------------------------------------------------------------------------------
-// Check the generated US file
-abstract class Logger {
-  abstract log(message: string, code?: string | number): void;
-}
-
-class User extends Logger {
-  log(message: string, code?: string | number): void {
-    console.log(code, message);
+function printEmployee(employee: UnknownEmployee) {
+  // Type Guards
+  if ('id' in employee) {
+    console.log(`[${employee.id}] ${employee.login}`);
   }
-  private counterForLogout = 360;
-  public static readonly VERSION = "1.1";
-  private static instance: User;
-
-  public get counter(): number {
-    if (this.counterForLogout <= 0) {
-      throw new Error("Your session expired");
-    }
-    return this.counterForLogout;
-  }
-
-  public set counter(v: number) {
-    this.counterForLogout = v;
-  }
-
-  // with private, we enforces that user cannot create instance -> singleton
-  private constructor(public login: string, public password: string) {
-    super();
-  }
-
-  static getInstance() {
-    if (this.instance) {
-      return this.instance;
-    }
-    return new User('lasakada', '12345');
-  }
-
-  whosLogged() {
-    console.log(`> ${this.login} logged`);
-  }
-
-  // using this: User, prevents from unexptected behaviour as shown bellow
-  decreaseCounterOfLogout(this: User, by: number) {
-    this.counterForLogout -= by;
+  if ('privileges' in employee) {
+    console.log(
+      `-> privileges: ${employee.privileges} \n\t Start Date: ${employee.startDate}`
+    );
   }
 }
 
-// const loginUser = new User("lasakada@tietoevry.com", "12345"); // not working with singleton
-const loginUser = User.getInstance();
-const coppyUser = {
-  decreaseCounterOfLogout: loginUser.decreaseCounterOfLogout,
-};
+printEmployee({
+  id: 270,
+  login: 'lasakada',
+});
 
-// UNXPECTED BEHAVIOUR - prevented with using this: User in User class method
-// coppyUser.decreaseCounterOfLogout(1); // ERROR: coppyUser Object has no same blueprint as User class
+printEmployee({
+  privileges: ['admin', 'sys_admin', 'programmer'],
+  startDate: new Date(),
+});
