@@ -56,7 +56,7 @@ type Animal = Bird | Lion;
 function printAnimal(animal: Animal) {
   let speed = 0;
   switch (animal.type) {
-    case 'bird': 
+    case 'bird':
       speed = animal.flyingSpeed;
       break;
     case 'lion':
@@ -68,7 +68,7 @@ function printAnimal(animal: Animal) {
   console.log(`Speed = ${speed}`);
 }
 
-//==================================================================
+//==========================================================
 // INDEX PROPERTIES
 
 interface ErrorContainer {
@@ -79,5 +79,47 @@ interface ErrorContainer {
 
 const errBag: ErrorContainer = {
   email: 'Not a valid email',
-  name: 'Must start with a capital character'
+  name: 'Must start with a capital character',
+};
+
+const neco: String = 'adam lasak';
+
+//==========================================================
+// FUNCTION OVERLOADS
+
+type Combined = number | string;
+
+function _add(a: number, b: number): number;
+function _add(a: string, b: string): string;
+function _add(a: string, b: number): string;
+function _add(a: number, b: string): string;
+function _add(a: Combined, b: Combined) {
+  if (typeof a === 'string' || typeof b === 'string') {
+    return a.toString() + b.toString();
+  }
+  return a + b;
 }
+
+const splitted = _add('1', '5').split('');
+
+//==========================================================
+// Optional Chaining AND Nullish Coalescing
+const responseData = {
+  name: 'GET',
+  status: 200,
+  data: {
+    body: 'Fetch has been successful',
+    params: 'get, 200, json',
+    footer: '',
+  },
+};
+
+// Optional Chaining
+const resultOfResponse = responseData?.data?.body;
+
+// Nullish Coalescing
+const resultFooterWithOR = responseData?.data?.footer || 'DEFAULT';
+const resultFooterWithNullish = responseData?.data?.footer ?? 'DEFAULT';
+
+console.log(`Result footer with || :: ${resultFooterWithOR}`);
+console.log(`Result footer with ?? :: ${resultFooterWithNullish}`);
