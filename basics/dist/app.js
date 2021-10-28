@@ -15,4 +15,22 @@ printEmployee({
     privileges: ['admin', 'sys_admin', 'programmer'],
     startDate: new Date(),
 });
+function printAnimal(animal) {
+    var speed = 0;
+    switch (animal.type) {
+        case 'bird':
+            speed = animal.flyingSpeed;
+            break;
+        case 'lion':
+            speed = animal.runingSpeed;
+            break;
+        default:
+            break;
+    }
+    console.log("Speed = " + speed);
+}
+var errBag = {
+    email: 'Not a valid email',
+    name: 'Must start with a capital character'
+};
 //# sourceMappingURL=app.js.map
