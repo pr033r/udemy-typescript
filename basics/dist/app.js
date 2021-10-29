@@ -1,4 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -17,18 +32,27 @@ function DLogger(log) {
 }
 function ViewTemplate(data) {
     console.log('ViewTemplate FACTORY');
-    return function (constructor) {
+    return function (originalConstructor) {
         console.log('Rendering template');
-        if (data.selector && data.template) {
-            var el = document.querySelector(data.selector);
-            var p = new constructor();
-            if (el && p) {
-                el.innerHTML = data.template;
-                el.querySelector('h1').textContent = p.name;
-                el.querySelector('h2').textContent = p.subtitle;
-                el.querySelector('p').innerHTML = p.text;
+        return (function (_super) {
+            __extends(class_1, _super);
+            function class_1() {
+                var _ = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    _[_i] = arguments[_i];
+                }
+                var _this = _super.call(this) || this;
+                if (data && data.template) {
+                    var el = document.querySelector(data.selector);
+                    el.innerHTML = data.template;
+                    el.querySelector('h1').textContent = _this.name;
+                    el.querySelector('h2').textContent = _this.subtitle;
+                    el.querySelector('p').innerHTML = _this.text;
+                }
+                return _this;
             }
-        }
+            return class_1;
+        }(originalConstructor));
     };
 }
 function PropertyDecorator(target, name) {

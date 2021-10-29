@@ -12,18 +12,34 @@ function DLogger(log: string) {
 function ViewTemplate(data: { selector: string; template: string }) {
   console.log('ViewTemplate FACTORY');
 
-  return function (constructor: any) {
-    console.log('Rendering template');
-    if (data.selector && data.template) {
-      const el = document.querySelector(data.selector);
-      const p = new constructor();
-      if (el && p) {
-        el.innerHTML = data.template;
-        el.querySelector('h1')!.textContent = p.name;
-        el.querySelector('h2')!.textContent = p.subtitle;
-        el.querySelector('p')!.innerHTML = p.text;
-      }
+  return function <
+    T extends {
+      new (...args: any[]): { name: string; subtitle: string; text: string };
     }
+  >(originalConstructor: T) {
+    console.log('Rendering template');
+
+    // Returning a new extended class from previous clas
+    // plus some additional code.
+    // - anonymous class is only syntactic-sugar for returning
+    //   an anonymous function (class is function in JS) as well
+    //   as constructor
+    return class extends originalConstructor {
+      // if TS complains that some var is declared but not used
+      // put _ as a name of that variable (because that variable
+      // must be there for some reason)
+      constructor(..._: any[]) {
+        super();
+        if (data && data.template) {
+          const el = document.querySelector(data.selector)!;
+          // const p = new originalConstructor(); // we can use 'this' now
+          el.innerHTML = data.template;
+          el.querySelector('h1')!.textContent = this.name; // previously p.name
+          el.querySelector('h2')!.textContent = this.subtitle;
+          el.querySelector('p')!.innerHTML = this.text;
+        }
+      }
+    };
   };
 }
 
@@ -58,7 +74,7 @@ function MethodDecorator(
   console.log(`%c \t descriptor = ${descriptor}`, color);
 }
 
-function ParamDecorator(target:any, nameOfMethod: string, position: number) {
+function ParamDecorator(target: any, nameOfMethod: string, position: number) {
   const color = 'color: #abc;';
   console.log('%c @ParamDecorator', color);
   console.log(`%c \t nameOfMethod = ${nameOfMethod}`, color);
