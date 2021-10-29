@@ -1,48 +1,41 @@
-interface Lenghty {
-  length: number;
-}
-
-// Using generic Contraints enforce that given T type
-// MUST HAVE 'length' property (for example: array, string, ...)
-// returning TUPLE
-function printLength<T extends Lenghty>(data: T): [T, string] {
-  let res = 'No data given.';
-  if (data.length === 1) {
-    res = `Got ${data.length} element.`;
-  } else if (data.length > 1) {
-    res = `Got ${data.length} elements`;
+function DLogger(log: string) {
+  // using an Decorator Factory - usefull when we want to pass arguments
+  // into the decorator
+  return function(constructor: Function) {
+    console.log(log);
+    console.log(constructor);
   }
-  return [data, res];
-}
-console.log(printLength('Hello World!'));
-
-// Using KEYOF keyword. without keyof we'll receive:
-// > "No index signature with a parameter of type 'string' was found on type '{}'"
-function getPropertyValue<T extends object, U extends keyof T>(obj: T, key: U) {
-  return obj[key];
 }
 
-// Using PARTIAL
-// For cases that we fill in an object partialy -> during some if statements decisions etc.
-// and we don't know the future values for object yet
-interface Course {
-  name: string;
-  sections: string[];
-  startDate: Date;
-  pointsNeeded: number;
+function ViewTemplate(data: {selector: string, template: string}) {
+  return function(constructor: any) {
+    if (data.selector && data.template) {
+      const el = document.querySelector(data.selector);
+      const p = new constructor();
+      if (el && p) {
+        el.innerHTML = data.template;
+        el.querySelector('h1')!.textContent = p.name;
+        el.querySelector('h2')!.textContent = p.subtitle;
+        el.querySelector('p')!.innerHTML = p.text;
+      }
+    }
+  }
 }
 
-function startCourse(retrievedCourse: Course): Course {
-  const resultCourse: Partial<Course> = {};
-  // ...some code
-  resultCourse.name = retrievedCourse.name;
-  // ...some code
-  resultCourse.sections = retrievedCourse.sections;
-  // ...some code
-  resultCourse.startDate = retrievedCourse.startDate;
-  // ...some code
-  resultCourse.pointsNeeded = retrievedCourse.pointsNeeded;
-  // we don't want to return Partial<Course>
-  // with using 'as' we as programmers know, that object is fully filled-in
-  return resultCourse as Course;
+@DLogger('DECORATOR-PARAM')
+@ViewTemplate({
+  selector: 'app-root',
+  template: '<h1></h1><h2></h2><p></p>',
+})
+class DPerson {
+  name = 'Using custom decorators';
+  subtitle = '@ViewTemplate';
+  text = `The syntax for using this decorator is: <br>
+    <span style="color: #00a;">@ViewTemplate(data: {selector: string, template: string})</span>`;
+
+  constructor() {
+    console.log('Calling a Person constructor...');
+  }
 }
+
+const per = new DPerson();
