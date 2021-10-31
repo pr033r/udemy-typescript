@@ -113,3 +113,44 @@ class DPerson {
 }
 
 const per = new DPerson();
+
+//-------------------------------------------------------
+function Autobind(
+  _: any, // to avoid warnings in TS, name it '_'
+  _2: string,
+  descriptor: PropertyDescriptor
+) {
+  const originalMethod = descriptor.value;
+  const adjustedDescriptor: PropertyDescriptor = {
+    enumerable: false,
+    configurable: true,
+
+    // get() is like extra-layer between method which is executed and the object which it belongs
+    // and the event listener -> hence 'this' won't be overwriten
+    get() {
+      // 'this' will refer to what is rensposible for triggering the 'set()' method
+      const boundFn = originalMethod.bind(this);
+      return boundFn;
+    },
+  };
+  return adjustedDescriptor;
+}
+
+class Printer {
+  private message = 'Print this message';
+
+  @Autobind
+  printMessage() {
+    console.log(this.message);
+  }
+}
+
+const p = new Printer();
+const button = document.querySelector('button')!;
+
+// print 'undefined', 'this' is not related to 'p' instance - if @Autobind is not used
+button.addEventListener('click', p.printMessage);
+
+// classic approach
+// print 'Print this message', 'this' is related to 'p' instance
+// button.addEventListener('click', p.printMessage.bind(p));

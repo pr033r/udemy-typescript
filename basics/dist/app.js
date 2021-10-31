@@ -122,4 +122,31 @@ var DPerson = (function () {
     return DPerson;
 }());
 var per = new DPerson();
+function Autobind(_, _2, descriptor) {
+    var originalMethod = descriptor.value;
+    var adjustedDescriptor = {
+        enumerable: false,
+        configurable: true,
+        get: function () {
+            var boundFn = originalMethod.bind(this);
+            return boundFn;
+        },
+    };
+    return adjustedDescriptor;
+}
+var Printer = (function () {
+    function Printer() {
+        this.message = 'Print this message';
+    }
+    Printer.prototype.printMessage = function () {
+        console.log(this.message);
+    };
+    __decorate([
+        Autobind
+    ], Printer.prototype, "printMessage", null);
+    return Printer;
+}());
+var p = new Printer();
+var button = document.querySelector('button');
+button.addEventListener('click', p.printMessage);
 //# sourceMappingURL=app.js.map
