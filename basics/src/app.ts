@@ -154,3 +154,4 @@ button.addEventListener('click', p.printMessage);
 // classic approach
 // print 'Print this message', 'this' is related to 'p' instance
 // button.addEventListener('click', p.printMessage.bind(p));
+//
