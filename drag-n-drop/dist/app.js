@@ -115,6 +115,23 @@ var Component = (function () {
     };
     return Component;
 }());
+var ProjectItem = (function (_super) {
+    __extends(ProjectItem, _super);
+    function ProjectItem(hostId, project) {
+        var _this = _super.call(this, 'single-project', hostId, 'beforeend', project.id) || this;
+        _this.project = project;
+        _this.configure();
+        _this.renderContent();
+        return _this;
+    }
+    ProjectItem.prototype.configure = function () { };
+    ProjectItem.prototype.renderContent = function () {
+        this.element.querySelector('h2').textContent = this.project.title;
+        this.element.querySelector('h3').textContent = "Count of people: " + this.project.people.toString();
+        this.element.querySelector('p').textContent = this.project.description;
+    };
+    return ProjectItem;
+}(Component));
 var ProjectList = (function (_super) {
     __extends(ProjectList, _super);
     function ProjectList(type) {
@@ -148,12 +165,11 @@ var ProjectList = (function (_super) {
         });
     };
     ProjectList.prototype.renderProjects = function () {
+        var _this = this;
         var listEl = _.getElementById(this.type + "-projects-list");
         listEl.innerHTML = '';
         this.assignedProjects.forEach(function (project) {
-            var listItem = document.createElement('li');
-            listItem.textContent = project.title;
-            listEl.appendChild(listItem);
+            new ProjectItem(_this.element.querySelector('ul').id, project);
         });
     };
     return ProjectList;
