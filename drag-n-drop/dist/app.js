@@ -125,7 +125,8 @@ var ProjectItem = (function (_super) {
         return _this;
     }
     ProjectItem.prototype.dragStartHandler = function (event) {
-        console.log('Drag Start Handler');
+        event.dataTransfer.setData('text/plain', this.project.id);
+        event.dataTransfer.effectAllowed = 'move';
     };
     ProjectItem.prototype.dragEndHandler = function (_) {
         console.log('Drag End Handler');
@@ -157,8 +158,23 @@ var ProjectList = (function (_super) {
         _this.renderContent();
         return _this;
     }
+    ProjectList.prototype.dragOverHandler = function (event) {
+        if (event.dataTransfer && event.dataTransfer.types[0] === 'text/plain') {
+            event.preventDefault();
+            var listEl = this.element.querySelector('ul');
+            listEl.classList.add('droppable');
+        }
+    };
+    ProjectList.prototype.dropHandler = function (event) { };
+    ProjectList.prototype.dragLeaveHandler = function (event) {
+        var listEl = this.element.querySelector('ul');
+        listEl.classList.remove('droppable');
+    };
     ProjectList.prototype.configure = function () {
         var _this = this;
+        this.element.addEventListener('dragover', this.dragOverHandler);
+        this.element.addEventListener('drop', this.dropHandler);
+        this.element.addEventListener('dragleave', this.dragLeaveHandler);
         projectState.addListener(function (projects) {
             _this.gatherProjects(projects);
             _this.renderProjects();
@@ -187,6 +203,12 @@ var ProjectList = (function (_super) {
             new ProjectItem(_this.element.querySelector('ul').id, project);
         });
     };
+    __decorate([
+        Autobind
+    ], ProjectList.prototype, "dragOverHandler", null);
+    __decorate([
+        Autobind
+    ], ProjectList.prototype, "dragLeaveHandler", null);
     return ProjectList;
 }(Component));
 var ProjectInput = (function (_super) {

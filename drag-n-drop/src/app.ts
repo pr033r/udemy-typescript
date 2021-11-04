@@ -159,7 +159,8 @@ class ProjectItem
 
   @Autobind
   dragStartHandler(event: DragEvent): void {
-    console.log('Drag Start Handler');
+    event.dataTransfer!.setData('text/plain', this.project.id);
+    event.dataTransfer!.effectAllowed = 'move';
   }
 
   @Autobind
@@ -181,7 +182,10 @@ class ProjectItem
   }
 }
 
-class ProjectList extends Component<HTMLDivElement, HTMLElement> {
+class ProjectList
+  extends Component<HTMLDivElement, HTMLElement>
+  implements DragTarget
+{
   assignedProjects: Project[] = [];
 
   constructor(private type: 'active' | 'finished') {
@@ -190,7 +194,27 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
     this.renderContent();
   }
 
+  @Autobind
+  dragOverHandler(event: DragEvent): void {
+    if (event.dataTransfer && event.dataTransfer.types[0] === 'text/plain') {
+      event.preventDefault(); // allowing Drag & Drop, by default it's turned off
+      const listEl = this.element.querySelector('ul')!;
+      listEl.classList.add('droppable');
+    }
+  }
+
+  dropHandler(event: DragEvent): void {}
+
+  @Autobind
+  dragLeaveHandler(event: DragEvent): void {
+    const listEl = this.element.querySelector('ul')!;
+    listEl.classList.remove('droppable');
+  }
+
   protected configure() {
+    this.element.addEventListener('dragover', this.dragOverHandler);
+    this.element.addEventListener('drop', this.dropHandler);
+    this.element.addEventListener('dragleave', this.dragLeaveHandler);
     projectState.addListener((projects: Project[]) => {
       this.gatherProjects(projects);
       this.renderProjects();
