@@ -35,19 +35,27 @@ var Project = (function () {
     }
     return Project;
 }());
-var ProjectState = (function () {
-    function ProjectState() {
+var State = (function () {
+    function State() {
         this.listeners = [];
-        this.projects = [];
+    }
+    State.prototype.addListener = function (listenerFn) {
+        this.listeners.push(listenerFn);
+    };
+    return State;
+}());
+var ProjectState = (function (_super) {
+    __extends(ProjectState, _super);
+    function ProjectState() {
+        var _this = _super.call(this) || this;
+        _this.projects = [];
+        return _this;
     }
     ProjectState.getInstance = function () {
         if (this.instance) {
             return this.instance;
         }
         return new ProjectState();
-    };
-    ProjectState.prototype.addListener = function (listenerFn) {
-        this.listeners.push(listenerFn);
     };
     ProjectState.prototype.addProject = function (title, description, people) {
         var _this = this;
@@ -57,7 +65,7 @@ var ProjectState = (function () {
     };
     ProjectState.instance = null;
     return ProjectState;
-}());
+}(State));
 var projectState = ProjectState.getInstance();
 function validate(input) {
     var valid = true;
@@ -113,13 +121,23 @@ var ProjectList = (function (_super) {
         var _this = _super.call(this, 'project-list', 'app', 'beforeend', type + "-projects") || this;
         _this.type = type;
         _this.assignedProjects = [];
+        _this.configure();
+        _this.renderContent();
+        return _this;
+    }
+    ProjectList.prototype.configure = function () {
+        var _this = this;
         projectState.addListener(function (projects) {
             _this.gatherProjects(projects);
             _this.renderProjects();
         });
-        _this.renderContent();
-        return _this;
-    }
+    };
+    ProjectList.prototype.renderContent = function () {
+        var listId = this.type + "-projects-list";
+        this.element.querySelector('ul').id = listId;
+        this.element.querySelector('h2').textContent =
+            this.type.toUpperCase() + ' PROJECTS';
+    };
     ProjectList.prototype.gatherProjects = function (projects) {
         var _this = this;
         this.assignedProjects = projects.filter(function (x) {
@@ -138,31 +156,36 @@ var ProjectList = (function (_super) {
             listEl.appendChild(listItem);
         });
     };
-    ProjectList.prototype.renderContent = function () {
-        var listId = this.type + "-projects-list";
-        this.element.querySelector('ul').id = listId;
-        this.element.querySelector('h2').textContent =
-            this.type.toUpperCase() + ' PROJECTS';
-    };
-    ProjectList.prototype.configure = function () {
-        throw new Error('Method not implemented.');
-    };
     return ProjectList;
 }(Component));
 var ProjectInput = (function (_super) {
     __extends(ProjectInput, _super);
     function ProjectInput() {
         var _this = _super.call(this, 'project-input', 'app', 'beforeend', 'user-input') || this;
-        _this.initFormInputs();
         _this.configure();
         return _this;
     }
-    ProjectInput.prototype.initFormInputs = function () {
+    ProjectInput.prototype.configure = function () {
         this.f = {
             title: this.element.querySelector('#title'),
             description: this.element.querySelector('#description'),
             people: this.element.querySelector('#people'),
         };
+        this.element.addEventListener('submit', this.submitHandler);
+    };
+    ProjectInput.prototype.renderContent = function () { };
+    ProjectInput.prototype.submitHandler = function (e) {
+        e.preventDefault();
+        try {
+            var _a = this.gatherUserInput(), title = _a[0], description = _a[1], people = _a[2];
+            this.clearUserInput();
+            projectState.addProject(title, description, people);
+        }
+        catch (err) {
+            if (err instanceof Error) {
+                alert(err.message);
+            }
+        }
     };
     ProjectInput.prototype.gatherUserInput = function () {
         var title = this.f.title.value;
@@ -187,25 +210,6 @@ var ProjectInput = (function (_super) {
         this.f.title.value = '';
         this.f.description.value = '';
         this.f.people.value = '';
-    };
-    ProjectInput.prototype.submitHandler = function (e) {
-        e.preventDefault();
-        try {
-            var _a = this.gatherUserInput(), title = _a[0], description = _a[1], people = _a[2];
-            this.clearUserInput();
-            projectState.addProject(title, description, people);
-        }
-        catch (err) {
-            if (err instanceof Error) {
-                alert(err.message);
-            }
-        }
-    };
-    ProjectInput.prototype.configure = function () {
-        this.element.addEventListener('submit', this.submitHandler);
-    };
-    ProjectInput.prototype.renderContent = function () {
-        throw new Error('Method not implemented.');
     };
     __decorate([
         Autobind

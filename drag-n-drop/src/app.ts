@@ -13,25 +13,28 @@ class Project {
   ) {}
 }
 
-type Listener = (projects: Project[]) => void;
+type Listener<T> = (x: T[]) => void;
+class State<T> {
+  protected listeners: Listener<T>[] = [];
 
-// Project State Management
-class ProjectState {
-  private listeners: Listener[] = [];
+  addListener(listenerFn: Listener<T>) {
+    this.listeners.push(listenerFn);
+  }
+}
+
+class ProjectState extends State<Project> {
   private projects: Project[] = [];
   static instance: ProjectState | null = null;
 
-  private constructor() {}
+  private constructor() {
+    super();
+  }
 
   static getInstance() {
     if (this.instance) {
       return this.instance;
     }
     return new ProjectState();
-  }
-
-  addListener(listenerFn: Listener) {
-    this.listeners.push(listenerFn);
   }
 
   addProject(title: string, description: string, people: number) {
@@ -138,12 +141,22 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
 
   constructor(private type: 'active' | 'finished') {
     super('project-list', 'app', 'beforeend', `${type}-projects`);
+    this.configure();
+    this.renderContent();
+  }
 
+  protected configure() {
     projectState.addListener((projects: Project[]) => {
       this.gatherProjects(projects);
       this.renderProjects();
     });
-    this.renderContent();
+  }
+
+  protected renderContent() {
+    const listId = `${this.type}-projects-list`;
+    this.element.querySelector('ul')!.id = listId;
+    this.element.querySelector('h2')!.textContent =
+      this.type.toUpperCase() + ' PROJECTS';
   }
 
   private gatherProjects(projects: Project[]) {
@@ -166,17 +179,6 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
       listEl.appendChild(listItem);
     });
   }
-
-  protected renderContent() {
-    const listId = `${this.type}-projects-list`;
-    this.element.querySelector('ul')!.id = listId;
-    this.element.querySelector('h2')!.textContent =
-      this.type.toUpperCase() + ' PROJECTS';
-  }
-
-  protected configure(): void {
-    throw new Error('Method not implemented.');
-  }
 }
 
 class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
@@ -184,11 +186,10 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
 
   constructor() {
     super('project-input', 'app', 'beforeend', 'user-input');
-    this.initFormInputs();
     this.configure();
   }
 
-  private initFormInputs() {
+  protected configure() {
     this.f = {
       title: this.element.querySelector('#title') as HTMLInputElement,
       description: this.element.querySelector(
@@ -196,6 +197,23 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
       ) as HTMLInputElement,
       people: this.element.querySelector('#people') as HTMLInputElement,
     };
+    this.element.addEventListener('submit', this.submitHandler);
+  }
+
+  protected renderContent() {}
+
+  @Autobind
+  private submitHandler(e: Event) {
+    e.preventDefault(); // do NOT call by default HTTP request
+    try {
+      const [title, description, people] = this.gatherUserInput();
+      this.clearUserInput();
+      projectState.addProject(title, description, people);
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message);
+      }
+    }
   }
 
   private gatherUserInput(): [string, string, number] {
@@ -230,28 +248,6 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
     this.f.title.value = '';
     this.f.description.value = '';
     this.f.people.value = '';
-  }
-
-  @Autobind
-  private submitHandler(e: Event) {
-    e.preventDefault(); // do NOT call by default HTTP request
-    try {
-      const [title, description, people] = this.gatherUserInput();
-      this.clearUserInput();
-      projectState.addProject(title, description, people);
-    } catch (err) {
-      if (err instanceof Error) {
-        alert(err.message);
-      }
-    }
-  }
-
-  protected configure() {
-    this.element.addEventListener('submit', this.submitHandler);
-  }
-
-  protected renderContent(): void {
-    throw new Error('Method not implemented.');
   }
 }
 
