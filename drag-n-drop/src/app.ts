@@ -5,6 +5,9 @@
 // !! 
 // USING NAMESPACES is not ideal, in nested file it's also working without refering
 // to particular file, which is not good -> rather use ES6 import/export 
+// for that, in tsconfig.json, target should be ES2015 (ES6) and "outFile": "./dist/bundle.js"
+// shouldn't be used -> hence whole project folder structure will be copied to the dist folders
+// AND change import in HTML to: <script type="module" src="./dist/bundle.js"></script>
 // !!
 /// <reference path="./models/drag-drop.ts" />
 /// <reference path="./models/project.ts"/>
