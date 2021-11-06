@@ -1,7 +1,7 @@
-import { Autobind } from '../decorators/autobind.js';
-import { projectState } from '../project-state.js';
-import { validate } from '../validation.js';
-import { Component } from './base-component.js';
+import { Autobind } from '../decorators/autobind';
+import { projectState } from '../project-state';
+import { validate } from '../validation';
+import { Component } from './base-component';
 
 // namespace App {
 interface FormInput {

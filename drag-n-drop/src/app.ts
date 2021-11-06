@@ -21,8 +21,8 @@
 /// <reference path="./components/project-input.ts" />
 */
 
-import { ProjectInput } from './components/project-input.js';
-import { ProjectList } from './components/project-list.js';
+import { ProjectInput } from './components/project-input';
+import { ProjectList } from './components/project-list';
 
 // to use exported Intefaces, whole app must be wrapped in the same 'name' namespace
 // namespace App {
@@ -33,3 +33,6 @@ new ProjectInput();
 new ProjectList('active');
 new ProjectList('finished');
 // }
+
+console.log('helo');
+
