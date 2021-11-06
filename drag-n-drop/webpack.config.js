@@ -19,7 +19,7 @@ module.exports = {
     // Webpack build server builds bundle.js and put it to memory
     // so it's not visible inside /dist folder -> /dist is only for
     // builds (production, test, ...)
-    publicPath: './dist',
+    publicPath: 'dist',
   },
 
   
@@ -29,8 +29,9 @@ module.exports = {
   devServer: {
     open: true,
     static: {
-      directory: path.join(__dirname, '/dist/'),
+      directory: path.join(__dirname, '/'),
     },
+    historyApiFallback: true,
     // compress: true,
     // hot: false,
     // liveReload: true
