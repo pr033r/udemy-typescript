@@ -34,7 +34,7 @@ module.exports = {
     historyApiFallback: true,
     // compress: true,
     // hot: false,
-    // liveReload: true
+    liveReload: true
   },
 
   // To tell Webpack how to work with files
